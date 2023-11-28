@@ -1,83 +1,125 @@
-# MachineLearning_P5
+# Analyse du jeu de données sur la détection de la fraude financière
 
+## Informations sur le jeu de données
 
-### 1. Analyse des types de transactions :
+- **Colonnes :**
+  - `step` : Heure de la transaction sur un mois.
+  - `type` : Type de transaction (par exemple, 'TRANSFER', 'CASH_OUT').
+  - `amount` : Montant de la transaction.
+  - `oldbalanceOrg` : Solde d'origine dans le compte d'origine.
+  - `newbalanceOrig` : Nouveau solde dans le compte d'origine.
+  - `oldbalanceDest` : Solde d'origine dans le compte de destination.
+  - `newbalanceDest` : Nouveau solde dans le compte de destination.
+  - `isFraud` : Étiquette binaire indiquant si la transaction est frauduleuse (1) ou non (0).
+  - `isFlaggedFraud` : Drapeau binaire indiquant si la transaction est signalée comme frauduleuse (1) ou non (0).
 
-À partir de la distribution des types de transactions pour les transactions frauduleuses, il semble que les types 'TRANSFER' et 'CASH_OUT' soient plus courants dans les activités frauduleuses.
+<br><br>
 
-```python
-plt.figure(figsize=(12, 6))
-sns.countplot(x='type', data=df[df['isFraud'] == 1])
-plt.title('Distribution of Transaction Types for Fraudulent Transactions')
-plt.xlabel('Transaction Type')
-plt.ylabel('Count')
-plt.xticks(rotation=45)
-plt.show()
-```
+## Contenu du dépôt
 
-<br>
+### 1. Exploration du jeu de données
 
-### 2. Analyse des montants :
+- Affichage d'informations de base sur le jeu de données avec `df.info()` :
 
-La distribution des montants de transactions pour les transactions frauduleuses montre une variété de montants, certaines transactions ayant des valeurs significativement plus élevées.
+    ```python
+    print(df.info())
+    ```
 
-```python
-plt.figure(figsize=(12, 6))
-sns.histplot(df[df['isFraud'] == 1]['amount'], bins=30, kde=True)
-plt.title('Distribution of Transaction Amounts for Fraudulent Transactions')
-plt.xlabel('Transaction Amount')
-plt.ylabel('Count')
-plt.show()
-```
+- Présentation des statistiques sommaires pour les colonnes numériques avec `df.describe()` :
 
-<br>
+    ```python
+    print(df.describe())
+    ```
 
-### 3. Analyse des soldes :
+- Présentation des premières lignes du jeu de données avec `df.head()` :
 
-La distribution des soldes dans les transactions frauduleuses présente des motifs variés, indiquant des caractéristiques potentielles pour la détection de la fraude.
-
-```python
-balance_cols = ['oldbalanceOrg', 'newbalanceOrig', 'oldbalanceDest', 'newbalanceDest']
-plt.figure(figsize=(15, 8))
-for col in balance_cols:
-    sns.histplot(df[df['isFraud'] == 1][col], bins=30, kde=True, label=col)
-plt.title('Distribution of Balances for Fraudulent Transactions')
-plt.xlabel('Balance')
-plt.ylabel('Count')
-plt.legend()
-plt.show()
-```
+    ```python
+    print(df.head())
+    ```
 
 <br>
 
-### 4. Analyse des tendances temporelles :
+### 2. Analyse de la colonne 'isFraud'
 
-Le graphique de l'occurrence de la fraude au fil du temps ne révèle pas de tendance temporelle claire, mais il est essentiel de prendre en compte les caractéristiques liées au temps.
+- Exploration de la colonne 'isFraud' pour comprendre la distribution des transactions frauduleuses et non frauduleuses :
 
-```python
-plt.figure(figsize=(15, 6))
-sns.lineplot(x='step', y='isFraud', data=df, ci=None)
-plt.title('Fraud Occurrence Over Time')
-plt.xlabel('Time Step')
-plt.ylabel('Fraud Occurrence')
-plt.show()
-```
+    ```python
+    # Affichage des valeurs uniques dans la colonne 'isFraud'
+    print(df['isFraud'].unique())
+
+    # Affichage de la distribution des valeurs dans la colonne 'isFraud'
+    print(df['isFraud'].value_counts())
+
+    # Affichage du pourcentage de transactions frauduleuses/non frauduleuses
+    print(df['isFraud'].value_counts(normalize=True) * 100)
+
+    # Affichage des valeurs manquantes dans le jeu de données
+    print(df.isnull().sum())
+    ```
 
 <br>
 
-### 5. Analyse des transactions signalées :
+### 3. Analyse approfondie des données
 
-Le nombre de transactions frauduleuses signalées parmi les transactions frauduleuses montre que la grande majorité des transactions frauduleuses ne sont pas signalées.
+- Réalisation d'une analyse détaillée de certaines caractéristiques :
 
-```python
-plt.figure(figsize=(8, 6))
-sns.countplot(x='isFlaggedFraud', hue='isFraud', data=df[df['isFraud'] == 1])
-plt.title('Count of Flagged Fraud Transactions among Fraudulent Transactions')
-plt.xlabel('isFlaggedFraud')
-plt.ylabel('Count')
-plt.show()
-```
+  - Types de transactions : Analyse de la distribution des types de transactions pour les transactions frauduleuses :
 
+    ```python
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    plt.figure(figsize=(12, 6))
+    sns.countplot(x='type', data=df[df['isFraud'] == 1])
+    plt.title('Distribution of Transaction Types for Fraudulent Transactions')
+    plt.xlabel('Transaction Type')
+    plt.ylabel('Count')
+    plt.xticks(rotation=45)
+    plt.show()
+    ```
+
+  - Analyse des montants : Exploration de la distribution des montants de transactions pour les transactions frauduleuses :
+
+    ```python
+    plt.figure(figsize=(12, 6))
+    sns.histplot(df[df['isFraud'] == 1]['amount'], bins=30, kde=True)
+    plt.title('Distribution of Transaction Amounts for Fraudulent Transactions')
+    plt.xlabel('Transaction Amount')
+    plt.ylabel('Count')
+    plt.show()
+    ```
+
+  - Boîte à moustaches des montants de transactions par statut de fraude :
+
+    ```python
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(x='isFraud', y='amount', data=df)
+    plt.title('Box Plot of Transaction Amounts by Fraud Status')
+    plt.xlabel('isFraud')
+    plt.ylabel('Amount')
+    plt.show()
+    ```
+
+  - Graphique en barres du pourcentage de transactions frauduleuses/non frauduleuses :
+
+    ```python
+    plt.figure(figsize=(8, 6))
+    pourcentage_fraude.plot(kind='bar', color=['green', 'red'])
+    plt.title('Percentage of Fraud/Non-Fraud Transactions')
+    plt.xlabel('isFraud')
+    plt.ylabel('Percentage')
+    plt.xticks(rotation=0)
+    plt.show()
+    ```
+
+  - Matrice de corrélation :
+
+    ```python
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
+    plt.title('Correlation Matrix')
+    plt.show()
+    ```
 <br>
 
 ### Aperçu global :
