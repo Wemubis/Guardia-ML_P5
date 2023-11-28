@@ -7,10 +7,13 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 file_path = '/home/wemubis/Documents/Code/machine_learning/clean_fraud.csv'
 df = pd.read_csv(file_path)
 
+df.replace(to_replace = ['PAYMENT', 'TRANSFER', 'CASH_OUT', 'DEBIT', 'CASH_IN'], value = [4,5,2,3,1],inplace = True)
+
 # Assuming 'isFraud' is the target variable and other columns are features
 # Replace 'isFraud' with your actual target column name
 X = df.drop('isFraud', axis=1)
 y = df['isFraud']
+
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
