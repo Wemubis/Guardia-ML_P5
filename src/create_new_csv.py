@@ -1,7 +1,7 @@
 import csv
 
-input_file = 'dataset\dataset_fraud.csv'  # Your existing CSV file
-output_file = 'dataset\clean_fraud.csv'  # Name for the new CSV file
+input_file = '/home/wemubis/Documents/Code/machine_learning/dataset_fraud.csv'  # Your existing CSV file
+output_file = '/home/wemubis/Documents/Code/machine_learning/clean_fraud.csv'  # Name for the new CSV file
 columns_to_keep = ['step', 'type', 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest','isFraud','isFlaggedFraud']  # Columns you want to keep
 
 with open(input_file, 'r') as infile, open(output_file, 'w', newline='') as outfile:

@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('dataset/clean_fraud')
+df = pd.read_csv('/home/wemubis/Documents/Code/machine_learning/clean_fraud')
 
 X = df.loc[(df.type == 'TRANSFER') | (df.type == 'CASH_OUT')]
 
