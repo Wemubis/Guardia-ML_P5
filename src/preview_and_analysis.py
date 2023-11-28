@@ -49,6 +49,30 @@ print(df.isnull().sum())
 # replacing string to integer values bassed the max occurance in the data
 df.replace(to_replace = ['PAYMENT', 'TRANSFER', 'CASH_OUT', 'DEBIT', 'CASH_IN'], value = [4,5,2,3,1],inplace = True)
 
+# Transaction Types: Analyzed the distribution of transaction types for fraudulent transactions
+plt.figure(figsize=(12, 6))
+sns.countplot(x='type', data=df[df['isFraud'] == 1])
+plt.title('Distribution of Transaction Types for Fraudulent Transactions')
+plt.xlabel('Transaction Type')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
+
+# Amount Analysis: Explored the distribution of transaction amounts for fraudulent transactions
+plt.figure(figsize=(12, 6))
+sns.histplot(df[df['isFraud'] == 1]['amount'], bins=30, kde=True)
+plt.title('Distribution of Transaction Amounts for Fraudulent Transactions')
+plt.xlabel('Transaction Amount')
+plt.ylabel('Count')
+plt.show()
+
+# To visualize the summary of the distribution of a numerical variable, identify outliers, and compare distributions.
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='isFraud', y='amount', data=df)
+plt.title('Box Plot of Transaction Amounts by Fraud Status')
+plt.xlabel('isFraud')
+plt.ylabel('Amount')
+plt.show()
 
 # Visualize the percentage of fraud/non-fraud transactions
 plt.figure(figsize=(8, 6))
@@ -63,22 +87,4 @@ plt.show()
 plt.figure(figsize=(10, 8))
 sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
 plt.title('Correlation Matrix')
-plt.show()
-
-# To visualize the summary of the distribution of a numerical variable, identify outliers, and compare distributions.
-plt.figure(figsize=(10, 6))
-sns.boxplot(x='isFraud', y='amount', data=df)
-plt.title('Box Plot of Transaction Amounts by Fraud Status')
-plt.xlabel('isFraud')
-plt.ylabel('Amount')
-plt.show()
-
-
-# Understand the distribution of transaction types (type column) and their relationship with isFraud.
-plt.figure(figsize=(10, 6))
-sns.countplot(x='type', hue='isFraud', data=df)
-plt.title('Transaction Type Distribution by Fraud Status')
-plt.xlabel('Transaction Type')
-plt.ylabel('Count')
-plt.xticks(rotation=45)
 plt.show()
