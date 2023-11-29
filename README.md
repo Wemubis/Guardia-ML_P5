@@ -104,7 +104,7 @@
 
     ```python
     plt.figure(figsize=(8, 6))
-    pourcentage_fraude.plot(kind='bar', color=['green', 'red'])
+    fraud_percentage.plot(kind='bar', color=['green', 'red'])
     plt.title('Percentage of Fraud/Non-Fraud Transactions')
     plt.xlabel('isFraud')
     plt.ylabel('Percentage')
