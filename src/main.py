@@ -8,7 +8,31 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-def choose_method(algorithm):
+def choose_method():
+	while True:
+		# Display available algorithms
+		print("Available algorithms:")
+		print("- 'random_forest'")
+		print("- 'svm'")
+		print("- 'knn'")
+		print("- 'decision_tree'")
+		print("- 'logistic_regression'")
+		print("- 'gradient_boosting'")
+		print("- 'exit' to quit")
+
+		# Prompt for algorithm choice
+		algorithm = input("Enter the desired algorithm: ").lower()
+
+		if algorithm == 'exit':
+			sys.exit(0)
+		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'logistic_regression', 'gradient_boosting']:
+			break
+		else:
+			print(f"\nInvalid algorithm choice: {algorithm}. Please choose a valid algorithm or type 'exit' to quit.\n")
+	
+	return algorithm
+
+def init_clasifier(algorithm):
 	if algorithm == 'random_forest':
 		return RandomForestClassifier(n_estimators=100, random_state=42)
 	elif algorithm == 'svm':
@@ -37,30 +61,11 @@ def train_and_evaluate():
 	# Split the data into training and testing sets
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-	# Loop for algorithm choice
-	while True:
-		# Display available algorithms
-		print("Available algorithms:")
-		print("1 - 'random_forest'")
-		print("2 - 'svm'")
-		print("3 - 'knn'")
-		print("4 - 'decision_tree'")
-		print("5 - 'logistic_regression'")
-		print("6 - 'gradient_boosting'")
-		print("7 - 'exit' to quit")
-
-		# Prompt for algorithm choice
-		algorithm = input("Enter the desired algorithm: ").lower()
-
-		if algorithm == 'exit':
-			sys.exit(0)
-		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'logistic_regression', 'gradient_boosting']:
-			break
-		else:
-			print(f"\nInvalid algorithm choice: {algorithm}. Please choose a valid algorithm or type 'exit' to quit.\n")
+	# Algorithm choice
+	algorithm = choose_method()
 
 	# Initialize the classifier based on user input
-	classifier = choose_method(algorithm)
+	classifier = init_clasifier(algorithm)
 
 	# Train the classifier
 	classifier.fit(X_train, y_train)
@@ -78,7 +83,6 @@ def train_and_evaluate():
 	print(f"Accuracy: {accuracy}")
 	print(f"Confusion Matrix:\n{conf_matrix}")
 	print(f"Classification Report:\n{classification_rep}")
-
 
 if __name__ == "__main__":
 	# Accept command-line arguments
