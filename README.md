@@ -123,8 +123,6 @@
 <br>
 
 ### Aperçu global :
-
-- Le jeu de données est fortement déséquilibré, avec un pourcentage très faible de transactions étiquetées comme frauduleuses.
 	
 - Les types de transactions 'TRANSFER' et 'CASH_OUT' sont plus fréquents dans les activités frauduleuses.
 	
