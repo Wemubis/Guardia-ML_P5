@@ -76,6 +76,8 @@ def init_model(algorithm):
 		model = AgglomerativeClustering(n_clusters=2)
 	elif algorithm == 'gaussian_mixture_models':
 		model = GaussianMixture(n_components=2, random_state=42)
+	
+	return model
 
 
 #################### EVALUATE ####################
@@ -138,7 +140,7 @@ def train_and_evaluate():
 
 #################### MAIN ####################
 if __name__ == "__main__":
-	
+
 	if len(sys.argv) != 1:
 		print("Usage: python script.py")
 		sys.exit(1)
