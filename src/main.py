@@ -1,16 +1,20 @@
 import sys
+import numpy as np
 import pandas as pd
 import xgboost as xgb
 import lightgbm as lgb
+from joblib import dump
 from sklearn.svm import SVC
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
 from sklearn.mixture import GaussianMixture
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans, AgglomerativeClustering
-from sklearn.linear_model import LogisticRegression, RidgeClassifier, Lasso
+from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, Lasso
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, silhouette_score
 
 
 #################### METHOD ####################
@@ -22,6 +26,7 @@ def choose_method():
 		print("- 'svm'")
 		print("- 'knn'")
 		print("- 'decision_tree'")
+		print("- 'linear_regression'")
 		print("- 'logistic_regression'")
 		print("- 'ridge_regression'")
 		print("- 'lasso_regression'")
@@ -38,13 +43,13 @@ def choose_method():
 		if algorithm == 'exit':
 			sys.exit(0)
 
-		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'logistic_regression',
+		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'linear_regression', 'logistic_regression',
 							'ridge_regression', 'lasso_regression', 'gradient_boosting', 'xgboost',
 							'lightgbm', 'kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
 			break
 		else:
 			print(f"\nInvalid algorithm choice: {algorithm}. Please choose a valid algorithm or type 'exit' to quit.\n")
-	
+
 	return algorithm
 
 
@@ -58,6 +63,8 @@ def init_model(algorithm):
 		model = KNeighborsClassifier()
 	elif algorithm == 'decision_tree':
 		model = DecisionTreeClassifier(random_state=42)
+	elif algorithm == 'linear_regression':
+		model = LinearRegression()
 	elif algorithm == 'logistic_regression':
 		model = LogisticRegression(random_state=42)
 	elif algorithm == 'ridge_regression':
@@ -73,17 +80,31 @@ def init_model(algorithm):
 	elif algorithm == 'kmeans':
 		model = KMeans(n_clusters=2, random_state=42)
 	elif algorithm == 'hierarchical_clustering':
-		model = AgglomerativeClustering(n_clusters=2)
+		model = AgglomerativeClustering(n_clusters=2, linkage='average')
 	elif algorithm == 'gaussian_mixture_models':
 		model = GaussianMixture(n_components=2, random_state=42)
-	
+
 	return model
+
+
+
+#################### EVALUATE CLUSTERING ####################
+def evaluate_clustering(X, labels, algorithm):
+	if algorithm == 'kmeans':
+		silhouette = silhouette_score(X, labels)
+		inertia = np.sum(np.min(cdist(X, labels.cluster_centers_, 'euclidean'), axis=1)) / X.shape[0]
+		return silhouette, inertia	
+	elif algorithm == 'hierarchical_clustering':
+		silhouette = silhouette_score(X, labels)
+		return silhouette
+	else:
+		return None
 
 
 #################### EVALUATE ####################
 def train_and_evaluate():
 	# Read the dataset
-	file_path = '/home/wemubis/Documents/GUARDIA/Projets/P5/machine_learning/clean_fraud.csv'
+	file_path = r'\Users\mewen\ML_P5\clean_fraud.csv'
 	df = pd.read_csv(file_path)
 
 	# Mapping transaction types to numerical values
@@ -101,46 +122,48 @@ def train_and_evaluate():
 
 	# Initialize the classifier based on user input
 	model = init_model(algorithm)
+	
+	algorithmJoblib = r"joblib\\" + algorithm + '.joblib'
 
 	# Train the model or fit the clustering algorithm
-	if algorithm in ['kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
-		model.fit(X)
+	if algorithm in ['kmeans', 'gaussian_mixture_models', 'hierarchical_clustering']:
+		labels = model.fit_predict(X)
+		dump(labels, algorithmJoblib)
 	else:
 		model.fit(X_train, y_train)
+		dump(model, algorithmJoblib)
 
-	# Make predictions or obtain cluster labels/probabilities
-	if algorithm in ['kmeans', 'hierarchical_clustering']:
-		# For K-Means and Hierarchical Clustering, display cluster labels
-		print("Cluster Labels:")
-		print(model.labels_)
-	elif algorithm == 'gaussian_mixture_models':
-		# For Gaussian Mixture Models, display cluster probabilities
-		print("Cluster Probabilities:")
-		print(model.predict_proba(X))
-	else:
-		# For classification algorithms, make predictions and evaluate the model
-		predictions = model.predict(X_test)
-		accuracy = accuracy_score(y_test, predictions)
-		conf_matrix = confusion_matrix(y_test, predictions)
-		classification_rep = classification_report(y_test, predictions)
 
 	# Evaluate the model or clustering algorithm
 	if algorithm not in ['kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
+		predictions = model.predict(X_test)
+		predictions = (predictions > 0.5).astype(int)
 		accuracy = accuracy_score(y_test, predictions)
 		conf_matrix = confusion_matrix(y_test, predictions)
 		classification_rep = classification_report(y_test, predictions)
 
 		# Display results
 		print("Classification Algorithm Results:")
-		print(f"\nAlgorithm: {algorithm}")
+		print(f"Algorithm: {algorithm}")
 		print(f"Accuracy: {accuracy}")
 		print(f"Confusion Matrix:\n{conf_matrix}")
 		print(f"Classification Report:\n{classification_rep}")
 
+	else:
+		# Evaluate clustering
+		clustering_metrics = evaluate_clustering(X, labels, algorithm)
+
+		# Display clustering results
+		if algorithm in ['kmeans', 'hierarchical_clustering']:
+			print("\nClustering Algorithm Results:")
+			print(f"Algorithm: {algorithm}")
+			print(f"Silhouette Score: {clustering_metrics[0]}")
+			if algorithm == 'kmeans':
+				print(f"Inertia (Sum of Squared Distances): {clustering_metrics[1]}")
+
 
 #################### MAIN ####################
 if __name__ == "__main__":
-
 	if len(sys.argv) != 1:
 		print("Usage: python script.py")
 		sys.exit(1)

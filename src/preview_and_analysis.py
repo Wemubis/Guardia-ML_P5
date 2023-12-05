@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Assuming your dataset is in a CSV file named 'financial_data.csv'
-file_path = '/home/wemubis/Documents/Code/machine_learning/clean_fraud.csv'
+file_path = r'\Users\mewen\ML_P5\clean_fraud.csv'
 
 # Load the dataset into a pandas DataFrame
 df = pd.read_csv(file_path)
