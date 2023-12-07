@@ -8,12 +8,15 @@ from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from sklearn.mixture import GaussianMixture
+from sklearn.preprocessing import LabelEncoder
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from mlxtend.preprocessing import TransactionEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans, AgglomerativeClustering
-from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, Lasso
+from mlxtend.frequent_patterns import apriori, association_rules
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, Lasso
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, silhouette_score
 
 
@@ -36,6 +39,7 @@ def choose_method():
 		print("- 'kmeans'")
 		print("- 'hierarchical_clustering'")
 		print("- 'gaussian_mixture_models'")
+		print("- 'apriori'")
 		print("- 'exit' to quit")
 
 		algorithm = input("Enter the desired algorithm: ").lower()
@@ -44,9 +48,10 @@ def choose_method():
 			sys.exit(0)
 
 		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'linear_regression', 'logistic_regression',
-							'ridge_regression', 'lasso_regression', 'gradient_boosting', 'xgboost',
+							'ridge_regression', 'lasso_regression', 'gradient_boosting', 'xgboost', 'apriori',
 							'lightgbm', 'kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
 			break
+
 		else:
 			print(f"\nInvalid algorithm choice: {algorithm}. Please choose a valid algorithm or type 'exit' to quit.\n")
 
@@ -83,6 +88,8 @@ def init_model(algorithm):
 		model = AgglomerativeClustering(n_clusters=2, linkage='average')
 	elif algorithm == 'gaussian_mixture_models':
 		model = GaussianMixture(n_components=2, random_state=42)
+	elif algorithm == 'apriori':
+		return 'apriori'
 
 	return model
 
@@ -114,7 +121,7 @@ def train_and_evaluate():
 	X = df.drop('isFraud', axis=1)
 	y = df['isFraud']
 
-	# Split the data into training and testing sets
+	# Split the data into training and testing sets | 80% of data for training and 20% for testing
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 	# Algorithm choice
@@ -123,19 +130,19 @@ def train_and_evaluate():
 	# Initialize the classifier based on user input
 	model = init_model(algorithm)
 	
-	algorithmJoblib = r"joblib\\" + algorithm + '.joblib'
+	algorithmJoblib = r"joblib\\" + algorithm + r".joblib"
 
 	# Train the model or fit the clustering algorithm
 	if algorithm in ['kmeans', 'gaussian_mixture_models', 'hierarchical_clustering']:
 		labels = model.fit_predict(X)
 		dump(labels, algorithmJoblib)
-	else:
+	elif algorithm != 'apriori':
 		model.fit(X_train, y_train)
 		dump(model, algorithmJoblib)
 
 
 	# Evaluate the model or clustering algorithm
-	if algorithm not in ['kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
+	if algorithm not in ['kmeans', 'hierarchical_clustering', 'gaussian_mixture_models', 'apriori']:
 		predictions = model.predict(X_test)
 		predictions = (predictions > 0.5).astype(int)
 		accuracy = accuracy_score(y_test, predictions)
@@ -148,6 +155,23 @@ def train_and_evaluate():
 		print(f"Accuracy: {accuracy}")
 		print(f"Confusion Matrix:\n{conf_matrix}")
 		print(f"Classification Report:\n{classification_rep}")
+
+	 # Apply Apriori algorithm
+	if algorithm == 'apriori':
+		# Assuming df is your DataFrame and 'type' is the column with transaction data
+		transactions = df['type'].apply(lambda x: [str(x)]).tolist()
+
+		# Transform the dataset into a one-hot encoded format
+		te = TransactionEncoder()
+		te_ary = te.fit(transactions).transform(transactions)
+		df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+		# Apply Apriori algorithm to find frequent itemsets
+		frequent_itemsets = apriori(df_encoded, min_support=0.2, use_colnames=True)
+
+		# Display the frequent itemsets
+		print("Frequent Itemsets:")
+		print(frequent_itemsets)
 
 	else:
 		# Evaluate clustering
