@@ -1,8 +1,12 @@
 import csv
-+9
-input_file = r"\Users\mewen\ML_P5\dataset_fraud.csv"  # Your existing CSV file
-output_file = r"\Users\mewen\ML_P5\clean_fraud.csv"  # Name for the new CSV file
-columns_to_keep = ['step', 'type', 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest','isFraud','isFlaggedFraud']  # Columns you want to keep
+
+input_file = r"\Users\mewen\ML_P5\dataset_fraud.csv"
+# output_file = r"\Users\mewen\ML_P5\clean_fraud.csv"
+output_file = r"\Users\mewen\ML_P5\clean_fraud_2.csv"
+
+# Columns to keep
+# columns_to_keep = ['step', 'type', 'amount','oldbalanceOrg','newbalanceOrig','oldbalanceDest','newbalanceDest','isFraud','isFlaggedFraud']
+columns_to_keep = ['step', 'type', 'amount','isFraud','isFlaggedFraud']
 
 with open(input_file, 'r') as infile, open(output_file, 'w', newline='') as outfile:
     reader = csv.DictReader(infile)

@@ -8,13 +8,12 @@ from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from sklearn.mixture import GaussianMixture
-from sklearn.preprocessing import LabelEncoder
+from mlxtend.frequent_patterns import apriori
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from mlxtend.preprocessing import TransactionEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans, AgglomerativeClustering
-from mlxtend.frequent_patterns import apriori, association_rules
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, Lasso
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, silhouette_score
@@ -25,14 +24,12 @@ def choose_method():
 	while True:
 		# Display available algorithms
 		print("Available algorithms:")
-		print("- 'random_forest'")
-		print("- 'svm'")
-		print("- 'knn'")
-		print("- 'decision_tree'")
 		print("- 'linear_regression'")
 		print("- 'logistic_regression'")
 		print("- 'ridge_regression'")
 		print("- 'lasso_regression'")
+		print("- 'decision_tree'")
+		print("- 'random_forest'")
 		print("- 'gradient_boosting'")
 		print("- 'xgboost'")
 		print("- 'lightgbm'")
@@ -47,7 +44,7 @@ def choose_method():
 		if algorithm == 'exit':
 			sys.exit(0)
 
-		if algorithm in ['random_forest', 'svm', 'knn', 'decision_tree', 'linear_regression', 'logistic_regression',
+		if algorithm in ['random_forest', 'decision_tree', 'linear_regression', 'logistic_regression',
 							'ridge_regression', 'lasso_regression', 'gradient_boosting', 'xgboost', 'apriori',
 							'lightgbm', 'kmeans', 'hierarchical_clustering', 'gaussian_mixture_models']:
 			break
@@ -60,14 +57,6 @@ def choose_method():
 
 #################### INIT ####################
 def init_model(algorithm):
-	if algorithm == 'random_forest':
-		model = RandomForestClassifier(n_estimators=100, random_state=42)
-	elif algorithm == 'svm':
-		model = SVC(random_state=42)
-	elif algorithm == 'knn':
-		model = KNeighborsClassifier()
-	elif algorithm == 'decision_tree':
-		model = DecisionTreeClassifier(random_state=42)
 	elif algorithm == 'linear_regression':
 		model = LinearRegression()
 	elif algorithm == 'logistic_regression':
@@ -76,6 +65,10 @@ def init_model(algorithm):
 		model = RidgeClassifier(random_state=42)
 	elif algorithm == 'lasso_regression':
 		model = Lasso(random_state=42)
+	elif algorithm == 'decision_tree':
+		model = DecisionTreeClassifier(random_state=42)
+	if algorithm == 'random_forest':
+		model = RandomForestClassifier(n_estimators=100, random_state=42)
 	elif algorithm == 'gradient_boosting':
 		model = GradientBoostingClassifier(random_state=42)
 	elif algorithm == 'xgboost':
@@ -89,7 +82,7 @@ def init_model(algorithm):
 	elif algorithm == 'gaussian_mixture_models':
 		model = GaussianMixture(n_components=2, random_state=42)
 	elif algorithm == 'apriori':
-		return 'apriori'
+		model = 'apriori'
 
 	return model
 
@@ -116,6 +109,9 @@ def train_and_evaluate():
 
 	# Mapping transaction types to numerical values
 	df.replace(to_replace=['PAYMENT', 'TRANSFER', 'CASH_OUT', 'DEBIT', 'CASH_IN'], value=[4, 5, 2, 3, 1], inplace=True)
+
+	# Imputation of missing value based on mean
+	df['amount'] = df['amount'].fillna(df['amount'].mean())
 
 	# Split features and target variable
 	X = df.drop('isFraud', axis=1)
@@ -157,7 +153,7 @@ def train_and_evaluate():
 		print(f"Classification Report:\n{classification_rep}")
 
 	 # Apply Apriori algorithm
-	if algorithm == 'apriori':
+	elif algorithm == 'apriori':
 		# Assuming df is your DataFrame and 'type' is the column with transaction data
 		transactions = df['type'].apply(lambda x: [str(x)]).tolist()
 
