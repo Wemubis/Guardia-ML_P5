@@ -124,12 +124,13 @@
 
 ### Aperçu global :
 	
-- Les types de transactions 'TRANSFER' et 'CASH_OUT' sont plus fréquents dans les activités frauduleuses.
-	
-- Les transactions frauduleuses impliquent souvent des montants plus élevés par rapport aux transactions non frauduleuses.
-	
-- Les soldes dans les comptes d'origine et de destination présentent des motifs variés pour les transactions frauduleuses.
-	
-- Il n'y a pas de tendance temporelle claire dans l'occurrence de la fraude, mais les caractéristiques liées au temps pourraient être pertinentes.
-	
-- Les transactions signalées sont rares parmi les transactions frauduleuses, indiquant des limites potentielles dans le mécanisme actuel de signalement.
+- Les transactions 'TRANSFER' et 'CASH_OUT' dominent les fraudes, confirmant leur rôle prépondérant dans ces incidents.
+
+- L'analyse des soldes d'origine et de destination révèle une diversité de motifs pour les fraudes, soulignant l'utilité potentielle de ces informations.
+
+- Aucune tendance temporelle claire n'émerge dans la fraude, mais des caractéristiques temporelles méritent une exploration plus approfondie.
+
+- Les transactions signalées restent peu fréquentes dans les cas de fraudes, suggérant des lacunes dans le processus de signalement.
+
+- La forte asymétrie entre transactions frauduleuses et non frauduleuses (99.87% contre 0.13%) souligne le défi du déséquilibre de classe dans l'entraînement des modèles.
+

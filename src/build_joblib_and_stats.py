@@ -110,9 +110,6 @@ def train_and_evaluate():
 	# Mapping transaction types to numerical values
 	df.replace(to_replace=['PAYMENT', 'TRANSFER', 'CASH_OUT', 'DEBIT', 'CASH_IN'], value=[4, 5, 2, 3, 1], inplace=True)
 
-	# Imputation of missing value based on mean
-	df['amount'] = df['amount'].fillna(df['amount'].mean())
-
 	# Split features and target variable
 	X = df.drop('isFraud', axis=1)
 	y = df['isFraud']
