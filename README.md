@@ -4,14 +4,14 @@
 
 - **Colonnes :**
   - `step` : Heure de la transaction sur un mois.
-  - `type` : Type de transaction (par exemple, 'TRANSFER', 'CASH_OUT').
+  - `type` : Type de transaction.
   - `amount` : Montant de la transaction.
   - `oldbalanceOrg` : Solde d'origine dans le compte d'origine.
   - `newbalanceOrig` : Nouveau solde dans le compte d'origine.
   - `oldbalanceDest` : Solde d'origine dans le compte de destination.
   - `newbalanceDest` : Nouveau solde dans le compte de destination.
-  - `isFraud` : Étiquette binaire indiquant si la transaction est frauduleuse (1) ou non (0).
-  - `isFlaggedFraud` : Drapeau binaire indiquant si la transaction est signalée comme frauduleuse (1) ou non (0).
+  - `isFraud` : Booléen indiquant si la transaction est frauduleuse (1) ou non (0).
+  - `isFlaggedFraud` : Booléen indiquant si la transaction est signalée comme frauduleuse (1) ou non (0).
 
 <br><br>
 
